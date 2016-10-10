@@ -1,0 +1,75 @@
+//
+// Autor: Andres Altamirano
+// Matricula: A01191723
+// Fecha: Octubre 10, 2016
+//
+// Program that will get an extremely large string
+// as input from the keyboard, which will only end
+// when the user enters an escape character.
+
+// Standard Input/Output library
+#include <stdio.h>
+
+// Included to provide the prototye for free()
+#include <stdlib.h>
+
+#define DllExport __declspec(dllexport)
+
+// Function that will return a new char array with
+// a bigger size than the original char array and
+// with the same data
+DllExport char* resize(char *cpStr, int iSize, int iNewSize)
+{
+	// Request new memory
+	char* cpAuxStr = (char *) malloc(iNewSize);
+	
+	// Copy existing data
+	memcpy(cpAuxStr, cpStr, iSize);
+	
+	// Free old data
+	free(cpStr);
+	
+	// Return the new char array with more memory allocated
+	return cpAuxStr;
+}
+
+// Function that will get an increasingly large string from
+// the keyboard. Input will end with an escape character '*'
+DllExport char* extremelyLargeString()
+{
+	char *cpStr;
+	// Request memory
+	cpStr = (char *) malloc(50);
+	
+	// character that will read each input character
+	char c;
+	
+	// 'count' counts the current string size
+	int iCount = 0;
+	
+	// 'strsize' is the current memory size we are working with
+	int iStrsize = 50;
+	
+	// Read from input until we receive the escape character
+	while ((c = getchar()) != '*') {
+		
+		// If we have used all the memory allocated, allocate
+		// more memory (double the size)
+		if (iCount == iStrsize) {
+			cpStr = resize(cpStr, iStrsize, iStrsize*2);
+			iStrsize *= 2;
+		}
+		
+		// store the character read on our array
+		cpStr[iCount++] = c;
+	}
+	
+	// If we are at memory limit, we need at least one more free
+	// byte for the '\0' ending character
+	if (iCount == iStrsize) {
+		cpStr = resize(cpStr, iStrsize, iStrsize + 1);
+	}
+	
+	cpStr[iCount] = 0;
+	return cpStr;
+}
